@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasySWork – Decent Work & Transparent Shift Platform for Students & Employers (SDG 8)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    .scanner-line { animation: scanMove 2.5s ease-in-out infinite alternate; }
+    @keyframes scanMove { from { top: 5%; } to { top: 90%; } }
+    .glow-pulse { animation: glowRing 2s infinite; }
+    @keyframes glowRing {
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+    .tour-highlight {
+      outline: 3px solid #3b82f6 !important;
+      outline-offset: 4px;
+      animation: tourGlow 1.5s infinite alternate;
+    }
+    @keyframes tourGlow { from { outline-color: #3b82f6; } to { outline-color: #f59e0b; } }
+    @media print {
+      body * { visibility: hidden; }
+      #printable-certificate, #printable-certificate * { visibility: visible; }
+      #printable-certificate { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased min-h-screen p-2 sm:p-4">
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white border border-slate-800 rounded-2xl p-3 sm:p-4 mb-4 shadow-xl">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center font-black text-white shadow-lg text-lg tracking-tight">
+          EW
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg text-white tracking-tight">EasySWork</span>
+            <span class="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+              SDG 8: Decent Student Work
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">Fair Stipends, Anti-Exploitation & Transparent Shifts for Students & Employers</p>
+        </div>
+      </div>
+
+      <div class="flex items-center flex-wrap gap-2">
+        <button id="btn-start-tour" onclick="toggleTourMode()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 transition-transform active:scale-95 animate-pulse">
+          <span>🎬</span>
+          <span id="lbl-tour-btn">Start 60s Demo Tour</span>
+        </button>
+
+        <button id="btn-network-sim" onclick="toggleNetworkMode()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 transition-colors">
+          <span id="net-icon" class="w-2 h-2 rounded-full bg-blue-400"></span>
+          <span id="net-label" class="text-[11px] font-semibold">Online (Synced)</span>
+        </button>
+
+        <div class="flex items-center bg-slate-800 rounded-xl p-1 border border-slate-700 text-xs">
+          <button id="btn-ind-research" onclick="switchSector('research')" class="px-2 py-1 rounded-lg font-semibold transition-all flex items-center gap-1 bg-blue-600 text-white shadow">
+            <span>🔬</span>
+            <span>Research & Labs</span>
+          </button>
+          <button id="btn-ind-events" onclick="switchSector('events')" class="px-2 py-1 rounded-lg font-medium text-slate-300 hover:text-white transition-all flex items-center gap-1">
+            <span>🎪</span>
+            <span>Events & Gigs</span>
+          </button>
+        </div>
+
+        <div>
+          <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-slate-800 border border-slate-700 text-white text-xs font-semibold rounded-xl px-2 py-1.5 focus:outline-none cursor-pointer">
+            <option value="en">🌐 English</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
+            <option value="ta" selected>🇮🇳 தமிழ்</option>
+            <option value="te">🇮🇳 తెలుగు</option>
+          </select>
+        </div>
+
+        <div class="flex bg-slate-800 p-0.5 rounded-xl border border-slate-700">
+          <button id="btn-student-view" onclick="switchPortal('student')" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-blue-500 text-slate-950 shadow-sm">
+            <span>🎓</span>
+            <span>Student</span>
+          </button>
+          <button id="btn-employer-view" onclick="switchPortal('employer')" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all">
+            <span>🏢</span>
+            <span>Employer</span>
+          </button>
+        </div>
+
+        <button onclick="openJudgeModal()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-400/30 text-xs font-bold px-2 py-1.5 rounded-xl flex items-center gap-1">
+          <span>🏆</span>
+          <span>Judges</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tour Banner -->
+  <div id="tour-banner" class="bg-slate-900 border border-amber-500/40 rounded-2xl p-3 mb-4 hidden">
+    <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-full bg-amber-500 text-slate-950 font-black flex items-center justify-center text-sm" id="tour-step-badge">1/6</span>
+        <div>
+          <span class="font-bold text-amber-300 block" id="tour-step-title">Step 1: Student Attendance & Geofenced Punch</span>
+          <p class="text-slate-300" id="tour-step-desc">Watch real-time GPS campus validation and gate QR check-in for student hourly shifts.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="prevTourStep()" id="btn-tour-prev" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg font-semibold">Previous</button>
+        <button onclick="nextTourStep()" id="btn-tour-next" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-1.5 rounded-lg font-extrabold shadow">Next Step →</button>
+        <button onclick="exitTourMode()" class="text-slate-400 hover:text-white px-2 py-1">✕ Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="offline-sync-pill" class="bg-amber-500 text-slate-950 text-xs font-bold py-1 px-4 text-center rounded-xl mb-4 hidden">
+    ⚡ OFFLINE MODE ACTIVE: Student logs cached locally in browser storage. Will sync when online.
+  </div>
+
+  <div id="toast-container" class="fixed top-20 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- MAIN STUDENT PORTAL (No profile photos, pure clean typography) -->
+  <main class="max-w-7xl mx-auto">
+    <div id="student-portal" class="block">
+      
+      <!-- Student Info Header: Clean Initial Badge + Name, NO profile photo -->
+      <div class="bg-slate-900 text-white rounded-2xl p-4 mb-4 border border-slate-800 shadow-md flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-black text-white text-base shadow border border-blue-400/40">
+            <span id="student-initials">AK</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="student-name" class="font-extrabold text-base text-white tracking-wide">Aravind Krishna</h2>
+              <span id="student-badge" class="bg-blue-500/20 text-blue-300 text-[11px] px-2 py-0.5 rounded-md font-semibold border border-blue-500/30">ID: STU-2026-CSE</span>
+            </div>
+            <p id="student-role" class="text-xs text-slate-300 font-medium">B.Tech Computer Science • Teaching & Lab Assistant</p>
+          </div>
+        </div>
+
+        <div class="flex items-center flex-wrap gap-2">
+          <button onclick="speakCurrentContext()" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 border border-blue-500/40 text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1.5">
+            <span>🔊</span>
+            <span id="lbl-voice-assist">Voice Guidance</span>
+          </button>
+          <button onclick="openSmsMirrorModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1.5">
+            <span>💬</span>
+            <span>SMS Notification</span>
+          </button>
+          <button onclick="triggerEmergencySOS()" class="bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 animate-pulse">
+            <span>🚨</span>
+            <span>SOS</span>
+          </button>
+          <button onclick="toggleMobileFrame()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-2.5 py-2 rounded-xl border border-slate-700 hidden md:flex items-center gap-1">
+            <span>📱</span>
+            <span id="lbl-toggle-view">Phone Frame</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="student-frame-wrapper" class="transition-all duration-300 max-w-full">
+        <div id="student-phone-container" class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden mx-auto max-w-2xl">
+          <div class="bg-slate-950 border-b border-slate-800 px-2 py-2">
+            <div class="grid grid-cols-5 gap-1 text-center">
+              <button onclick="setStudentTab('shift')" id="tab-btn-shift" class="tab-btn py-2 px-1 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow-md flex flex-col items-center gap-0.5">
+                <span class="text-base">⏱️</span><span id="tab-txt-shift" class="text-[11px]">Shift & Pay</span>
+              </button>
+              <button onclick="setStudentTab('payslip')" id="tab-btn-payslip" class="tab-btn py-2 px-1 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
+                <span class="text-base">💵</span><span id="tab-txt-payslip" class="text-[11px]">Stipend</span>
+              </button>
+              <button onclick="setStudentTab('grievance')" id="tab-btn-grievance" class="tab-btn py-2 px-1 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
+                <span class="text-base">🛡️</span><span id="tab-txt-grievance" class="text-[11px]">SafeSpeak</span>
+              </button>
+              <button onclick="setStudentTab('passport')" id="tab-btn-passport" class="tab-btn py-2 px-1 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
+                <span class="text-base">📜</span><span id="tab-txt-passport" class="text-[11px]">Skill ID</span>
+              </button>
+              <button onclick="setStudentTab('exam')" id="tab-btn-exam" class="tab-btn py-2 px-1 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5">
+                <span class="text-base">📚</span><span id="tab-txt-exam" class="text-[11px]">Study-Fit</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="p-4 sm:p-6 bg-slate-900 min-h-[560px] text-slate-100">
+            <!-- SHIFT TAB -->
+            <div id="student-tab-shift" class="space-y-4">
+              <div id="tour-box-geofence" class="bg-slate-800/80 rounded-2xl p-3 border border-slate-700/80 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></span>
+                  <span class="text-slate-300 font-medium" id="lbl-geofence">Campus GPS Verified:</span>
+                  <span class="text-blue-400 font-bold" id="geo-location-name">SRM Tech Park AI Lab 4 (Within 15m)</span>
+                </div>
+                <span class="text-slate-400 text-[11px]" id="current-clock">11:20 AM</span>
+              </div>
+
+              <div id="tour-box-clock" class="bg-slate-850 border border-slate-700 rounded-3xl p-5 text-center shadow-lg relative">
+                <div class="inline-flex items-center gap-2 bg-blue-500/15 border border-blue-500/30 px-3.5 py-1 rounded-full mb-3">
+                  <span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
+                  <span id="shift-status-badge" class="text-blue-300 text-xs font-bold tracking-wide uppercase">Student Shift Active</span>
+                </div>
+                <div class="my-2">
+                  <div id="shift-live-timer" class="font-mono text-4xl sm:text-5xl font-black text-white tracking-tight">03h 45m 12s</div>
+                  <p class="text-xs text-slate-400 mt-1" id="lbl-shift-start-info">Clocked in today at 08:30 AM • Max allowed for student: 4.0 hrs/day</p>
+                </div>
+                <div id="ot-card" class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3 my-4 text-left flex items-center justify-between">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">⚡</span>
+                    <div>
+                      <div class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                        <span id="lbl-ot-active">Hourly Stipend Accrual Active</span>
+                        <span class="bg-amber-500/20 text-amber-200 text-[10px] px-1.5 py-0.5 rounded font-mono">₹200/hr Rate</span>
+                      </div>
+                      <p class="text-[11px] text-slate-300" id="lbl-ot-desc">Transparent stipend rate. Every minute of lab supervision is compensated.</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-xs text-slate-400 block font-medium">Stipend Earned Today</span>
+                    <span id="ot-earned-val" class="text-base font-extrabold text-amber-400 font-mono">+₹ 750.00</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                  <button id="btn-toggle-shift" onclick="toggleClockAction()" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-sm">
+                    <span id="btn-shift-action-txt">Clock Out</span>
+                  </button>
+                  <button id="btn-break-action" onclick="toggleBreakAction()" class="bg-slate-700 hover:bg-slate-600 text-slate-100 font-semibold py-3.5 px-4 rounded-2xl border border-slate-600 flex items-center justify-center gap-2 text-sm">
+                    <span>☕</span>
+                    <span id="btn-break-action-txt">Study Pause (Break)</span>
+                  </button>
+                </div>
+                <button onclick="openQRScannerModal()" class="w-full mt-3 bg-slate-800/80 hover:bg-slate-700 border border-slate-600/80 text-blue-400 text-xs font-semibold py-2.5 px-3 rounded-xl flex items-center justify-center gap-2">
+                  <span>📷</span>
+                  <span id="lbl-scan-qr">Scan Department QR Check-In</span>
+                </button>
+              </div>
+
+              <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2"><span class="text-lg">📚</span><h3 class="font-bold text-sm text-white" id="lbl-fatigue-title">Study-Work Ethics & Exam Safeguard</h3></div>
+                  <span id="fatigue-safety-badge" class="bg-blue-500/20 text-blue-300 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-500/30">Healthy Balance</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed" id="fatigue-safety-desc">You have worked 16 hours this week (Max recommended: 20h/wk).</p>
+                <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden mt-3">
+                  <div class="bg-blue-500 h-full rounded-full" style="width: 80%;"></div>
+                </div>
+              </div>
+              <div class="bg-slate-800/60 rounded-2xl p-4 border border-slate-700/60">
+                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2" id="lbl-recent-shifts">Recent Verified Student Shifts</h4>
+                <div class="space-y-2 text-xs" id="student-recent-shifts-list"></div>
+              </div>
+            </div>
+
+            <!-- PAYSLIP TAB -->
+            <div id="student-tab-payslip" class="hidden space-y-4">
+              <div id="tour-box-payslip-audio" class="bg-gradient-to-r from-blue-950 via-slate-850 to-slate-900 border border-blue-500/30 rounded-3xl p-5 shadow-lg relative">
+                <div class="flex items-center justify-between mb-3">
+                  <div>
+                    <span class="text-xs font-semibold text-blue-400 uppercase tracking-wider" id="lbl-payslip-month">Current Month Student Stipend Breakdown</span>
+                    <h3 class="text-2xl sm:text-3xl font-black text-white mt-0.5">₹ 14,800.00</h3>
+                    <p class="text-xs text-slate-300 mt-1" id="lbl-net-wages">Net Payable to Bank • 74 Hours Logged</p>
+                  </div>
+                  <button onclick="readPayslipAloud()" class="bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold p-3 rounded-2xl shadow-lg flex flex-col items-center gap-1 transition-all active:scale-95">
+                    <span class="text-2xl">🔊</span>
+                    <span class="text-[10px] font-extrabold uppercase" id="lbl-audio-read">Hear Pay</span>
+                  </button>
+                </div>
+                <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-2.5 text-xs text-blue-200">
+                  <span id="lbl-fair-wage-notice">EasySWork Guarantee: No unpaid student overtime. Complete transparent audit.</span>
+                </div>
+              </div>
+
+              <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-sm text-xs divide-y divide-slate-700">
+                <div class="py-2.5 flex justify-between items-center">
+                  <div><span class="font-semibold text-white" id="lbl-base-rate">Base Teaching & Lab Hours</span><p class="text-[11px] text-slate-400" id="lbl-base-rate-desc">60 hours standard × ₹200 / hr</p></div>
+                  <span class="font-bold text-white font-mono">₹ 12,000.00</span>
+                </div>
+                <div class="py-2.5 flex justify-between items-center text-amber-300">
+                  <div><span class="font-semibold" id="lbl-ot-item">⚡ Weekend Fest / Hackathon Duty</span><p class="text-[11px] text-slate-400" id="lbl-ot-calc-desc">14 hours extra duty @ ₹200/hr</p></div>
+                  <span class="font-bold font-mono">+ ₹ 2,800.00</span>
+                </div>
+                <div class="py-2.5 flex justify-between items-center text-emerald-300">
+                  <div><span class="font-semibold" id="lbl-allowance-item">Academic Mentorship & Peer Rating Bonus</span></div>
+                  <span class="font-bold font-mono">+ ₹ 1,000.00</span>
+                </div>
+                <div class="py-2.5 flex justify-between items-center text-rose-300">
+                  <div><span class="font-semibold" id="lbl-deductions-item">Lab Safety & Equipment Insurance</span></div>
+                  <span class="font-bold font-mono">- ₹ 1,000.00</span>
+                </div>
+                <div class="pt-3 flex justify-between items-center">
+                  <span class="font-bold text-white text-sm" id="lbl-total-takehome">Total Direct Deposit to Student Account</span>
+                  <span class="font-extrabold text-blue-400 text-lg font-mono">₹ 14,800.00</span>
+                </div>
+              </div>
+
+              <div class="flex gap-2">
+                <button onclick="disputeSalaryAction()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 py-2.5 rounded-xl text-xs font-semibold" id="lbl-dispute-btn">Dispute Stipend or Missing Hours?</button>
+                <button onclick="downloadSalarySlip()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-xl text-xs font-bold" id="lbl-download-slip">Download Payslip</button>
+              </div>
+            </div>
+
+            <!-- GRIEVANCE TAB -->
+            <div id="student-tab-grievance" class="hidden space-y-4">
+              <div class="bg-indigo-950/60 border border-indigo-500/30 rounded-2xl p-4 text-xs">
+                <div class="flex items-center gap-2 text-indigo-300 font-bold mb-1"><span class="text-base">🔒</span><span id="lbl-anon-guarantee">100% Anonymous Anti-Retaliation Protection</span></div>
+                <p class="text-slate-300 leading-relaxed" id="lbl-anon-desc">Report unpaid hours or exam exploitation without fearing professor retaliation. Encrypted tracking token provided.</p>
+              </div>
+
+              <div id="tour-box-voice-hazard" class="bg-slate-800 border border-slate-700 rounded-2xl p-4 space-y-3">
+                <h4 class="text-xs font-bold text-slate-200 uppercase tracking-wider" id="lbl-report-hazard-title">Report Campus Work Issue, Unpaid Hours, or Harassment</h4>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <button type="button" onclick="selectGrievanceCategory('wage')" id="cat-btn-wage" class="cat-pill py-2 px-3 rounded-xl border border-blue-500 bg-blue-500/20 text-blue-300 font-bold text-left">💰 Unpaid Stipend</button>
+                  <button type="button" onclick="selectGrievanceCategory('safety')" id="cat-btn-safety" class="cat-pill py-2 px-3 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-medium text-left">⚠️ Lab Hazard</button>
+                  <button type="button" onclick="selectGrievanceCategory('exam')" id="cat-btn-exam" class="cat-pill py-2 px-3 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-medium text-left">📚 Exam Conflict</button>
+                  <button type="button" onclick="selectGrievanceCategory('harassment')" id="cat-btn-harassment" class="cat-pill py-2 px-3 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-medium text-left">⚖️ Harassment</button>
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-slate-300 text-xs font-medium" id="lbl-describe-issue">Describe the Issue</label>
+                    <button type="button" onclick="triggerVoiceNoteRecording()" id="btn-voice-record" class="bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/40 text-[11px] font-semibold px-2.5 py-1 rounded-lg">
+                      <span id="lbl-record-voice">🎙️ Record Voice Note</span>
+                    </button>
+                  </div>
+                  <textarea id="grievance-textarea" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none" placeholder="Type here or tap Voice Note..."></textarea>
+                </div>
+
+                <div>
+                  <label class="block text-slate-300 text-xs font-medium mb-1" id="lbl-hazard-loc">Department / Campus Location</label>
+                  <input type="text" id="grievance-location" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none" placeholder="e.g. Biotech Block Level 3 or Tech Fest Stage">
+                </div>
+
+                <button type="button" onclick="submitGrievance()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg text-xs" id="lbl-submit-report">
+                  Submit Anonymous Student Grievance
+                </button>
+              </div>
+
+              <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700/80">
+                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2" id="lbl-my-reports">My Tracked Reports</h4>
+                <div class="space-y-2.5" id="student-tickets-list"></div>
+              </div>
+            </div>
+
+            <!-- PASSPORT TAB -->
+            <div id="student-tab-passport" class="hidden space-y-4">
+              <div id="tour-box-passport" class="bg-gradient-to-br from-slate-850 via-slate-800 to-blue-950 border-2 border-blue-500/40 rounded-3xl p-5 shadow-2xl relative">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <span class="text-xs font-black tracking-widest uppercase text-blue-400 block">EasySWork Verified Student Passport</span>
+                    <h3 class="text-xl font-bold text-white mt-1" id="passport-student-name">Aravind Krishna</h3>
+                    <p class="text-xs text-slate-300" id="passport-student-domain">B.Tech CSE • Verified Academic & Technical Assistant</p>
+                  </div>
+                  <div class="bg-white p-1.5 rounded-xl shadow-md text-center">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=EASYSWORK-VERIFIED-STUDENT-ARAVIND-2026" alt="QR" class="w-14 h-14 object-contain">
+                    <span class="text-[9px] font-bold text-slate-800 block mt-0.5">SCAN VERIFY</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 my-4 pt-3 border-t border-slate-700 text-center">
+                  <div class="bg-slate-800/90 rounded-xl p-2"><span class="text-xs text-slate-400 block" id="lbl-passport-hours">Logged Work Hours</span><span class="text-base font-black text-white font-mono" id="passport-hours-val">340 hrs</span></div>
+                  <div class="bg-slate-800/90 rounded-xl p-2"><span class="text-xs text-slate-400 block" id="lbl-passport-safety">Work Ethics Score</span><span class="text-base font-black text-blue-400 font-mono">99.8%</span></div>
+                  <div class="bg-slate-800/90 rounded-xl p-2"><span class="text-xs text-slate-400 block" id="lbl-passport-ratings">Faculty Rating</span><span class="text-base font-black text-amber-400 font-mono">4.9 ★</span></div>
+                </div>
+
+                <div>
+                  <h5 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2" id="lbl-verified-badges">Verified Credentials</h5>
+                  <div class="space-y-2" id="passport-badges-list"></div>
+                </div>
+              </div>
+              <button onclick="sharePassport()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2" id="lbl-share-passport">
+                Share Verifiable Skill Link with Employers
+              </button>
+            </div>
+
+            <!-- EXAM & STUDY FIT CHECK TAB -->
+            <div id="student-tab-exam" class="hidden space-y-4">
+              <div class="bg-slate-800 border border-slate-700 rounded-3xl p-5 text-center shadow-lg space-y-3">
+                <span class="inline-block bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs font-bold">Exam & Cognitive Alertness Check (SDG 8 for Youth)</span>
+                <h3 class="text-base font-bold text-white">Pre-Shift Fatigue & Study-Balance Test</h3>
+                <p class="text-xs text-slate-300 max-w-md mx-auto">Tap the circle the moment it turns <strong class="text-emerald-400">GREEN</strong> to verify cognitive alertness before starting campus work.</p>
+                
+                <div id="reflex-target" onclick="handleReflexClick()" class="w-44 h-44 mx-auto rounded-full bg-slate-700 border-4 border-slate-600 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 select-none active:scale-95">
+                  <span id="reflex-icon" class="text-3xl mb-1">⏱️</span>
+                  <span id="reflex-msg" class="text-xs font-bold text-slate-200">Tap to Start</span>
+                </div>
+
+                <div class="bg-slate-900/80 rounded-2xl p-3 border border-slate-700 text-xs text-left max-w-sm mx-auto space-y-1">
+                  <div class="flex justify-between"><span class="text-slate-400">Baseline Reaction:</span><span class="font-mono text-white">~250 ms</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Last Test Score:</span><span id="reflex-score-val" class="font-mono font-bold text-emerald-400">238 ms (Passed)</span></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Clearance:</span><span id="reflex-clearance-val" class="text-emerald-300 font-bold">✓ Fit for Campus Work Duty</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLOYER PORTAL -->
+    <div id="employer-portal" class="hidden">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+          <div><span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Students On-Duty</span><h3 class="text-2xl font-black text-white mt-1" id="adm-metric-active">52 / 60</h3><p class="text-xs text-blue-400 mt-0.5">↑ 86.7% Attendance</p></div>
+          <div class="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-xl text-blue-400">🎓</div>
+        </div>
+        <div id="tour-box-adm-fatigue" class="bg-slate-800 border border-amber-500/30 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+          <div><span class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Exam Overwork Risk Alerts</span><h3 class="text-2xl font-black text-white mt-1" id="adm-metric-fatigue">4 Students</h3><p class="text-xs text-amber-300 mt-0.5">>20h/wk or upcoming exams</p></div>
+          <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-xl text-amber-400">⚠️</div>
+        </div>
+        <div id="tour-box-adm-tickets" class="bg-slate-800 border border-rose-500/30 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+          <div><span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Anonymous Student Tickets</span><h3 class="text-2xl font-black text-white mt-1" id="adm-metric-grievances">2 Open Tickets</h3><p class="text-xs text-rose-300 mt-0.5">1 Delayed Stipend</p></div>
+          <div class="w-12 h-12 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-xl text-rose-400">🛡️</div>
+        </div>
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+          <div><span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">SDG 8 Youth Labor Score</span><h3 class="text-2xl font-black text-emerald-400 mt-1">99.4 / 100</h3><p class="text-xs text-slate-300 mt-0.5">Zero Unpaid Student Overtime</p></div>
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-xl text-indigo-400">⚖️</div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div class="bg-slate-850 border border-slate-700/80 rounded-2xl p-1 flex flex-wrap gap-1">
+          <button onclick="setEmployerTab('roster')" id="adm-tab-roster" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow">📋 Active Students</button>
+          <button onclick="setEmployerTab('grievances')" id="adm-tab-grievances" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white">🛡️ Grievance Board</button>
+          <button onclick="setEmployerTab('fatigue')" id="adm-tab-fatigue" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white">⚡ Exam Radar</button>
+          <button onclick="setEmployerTab('audit')" id="adm-tab-audit" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white">📊 Stipend Ledger</button>
+        </div>
+        <button onclick="openCertificateModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white text-xs font-extrabold px-4 py-2 rounded-xl shadow-lg flex items-center gap-2">
+          <span>📜</span><span>Generate SDG 8 Certificate</span>
+        </button>
+      </div>
+
+      <div id="adm-view-roster" class="bg-slate-800 border border-slate-700 rounded-3xl p-5 shadow-lg space-y-4">
+        <div class="flex justify-between items-center"><h3 class="font-bold text-base text-white" id="adm-roster-sector-title">Active Student Assistants</h3><button onclick="exportRosterCSV()" class="bg-slate-700 px-3 py-1.5 rounded-xl text-xs text-white">CSV Export</button></div>
+        <div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-300"><tbody id="adm-roster-tbody" class="divide-y divide-slate-700/60"></tbody></table></div>
+      </div>
+
+      <div id="adm-view-grievances" class="hidden bg-slate-800 border border-slate-700 rounded-3xl p-5 shadow-lg space-y-3">
+        <h3 class="font-bold text-base text-white">Whistleblower & Student Protection Board</h3>
+        <div class="space-y-3" id="adm-grievance-cards"></div>
+      </div>
+
+      <div id="adm-view-fatigue" class="hidden bg-slate-800 border border-slate-700 rounded-3xl p-5 shadow-lg space-y-4">
+        <h3 class="font-bold text-base text-white">Student Workload & Exam Conflict Radar (SDG 8.6)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="fatigue-radar-cards"></div>
+      </div>
+
+      <div id="adm-view-audit" class="hidden bg-slate-800 border border-slate-700 rounded-3xl p-5 shadow-lg space-y-4">
+        <h3 class="font-bold text-base text-white">Auditable Student Stipend & Overtime Ledger</h3>
+        <table class="w-full text-left text-xs text-slate-300"><tbody id="audit-table-body" class="divide-y divide-slate-700/60"></tbody></table>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODALS -->
+  <div id="modal-sms" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-sm w-full p-5 shadow-2xl relative">
+      <button onclick="closeSmsMirrorModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+      <div class="flex items-center gap-2 mb-3"><span class="text-2xl">📱</span><h3 class="font-bold text-sm text-white">Student & Parent SMS Bridge</h3></div>
+      <div class="bg-blue-950/40 border-2 border-blue-500/50 rounded-2xl p-4 font-mono text-xs text-blue-300 space-y-2">
+        <div class="flex justify-between text-[10px] text-blue-400/80 border-b border-blue-500/30 pb-1"><span>SMS: EasySWork-SRM</span><span>11:20 AM</span></div>
+        <p id="sms-body-text">வணக்கம் Aravind. உங்கள் 3.5 மணிநேர பணி முடிந்தது. இன்றைய உதவித்தொகை: ₹750.</p>
+      </div>
+      <button onclick="closeSmsMirrorModal()" class="w-full mt-4 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2 rounded-xl text-xs">Close</button>
+    </div>
+  </div>
+
+  <div id="modal-certificate" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative">
+      <button onclick="closeCertificateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">✕</button>
+      <div id="printable-certificate" class="bg-slate-950 border-4 border-double border-blue-500/60 rounded-3xl p-6 text-center text-slate-200">
+        <span class="text-xs font-black tracking-widest text-blue-400 uppercase">UN SDG 8 Youth Employment Standards</span>
+        <h2 class="text-2xl font-black text-white mt-1">CERTIFICATE OF DECENT STUDENT WORK</h2>
+        <div class="my-4 py-3 border-y border-slate-700">
+          <h3 class="text-xl font-bold text-blue-300" id="cert-org-name">SRM University – Academic & Research Laboratories</h3>
+          <p class="text-xs text-slate-400 mt-1">Verified 100% Fair Student Pay, Exam-Study Safeguards & Anti-Retaliation Standards</p>
+        </div>
+        <div class="grid grid-cols-3 gap-3 my-4 text-left">
+          <div class="bg-slate-800/80 p-2.5 rounded-xl"><span class="text-[10px] text-slate-400 block">Stipend Accuracy</span><span class="text-base font-black text-emerald-400 font-mono">100.0%</span></div>
+          <div class="bg-slate-800/80 p-2.5 rounded-xl"><span class="text-[10px] text-slate-400 block">Grievance SLA</span><span class="text-base font-black text-emerald-400 font-mono">1.4 hrs</span></div>
+          <div class="bg-slate-800/80 p-2.5 rounded-xl"><span class="text-[10px] text-slate-400 block">Study Safeguard</span><span class="text-base font-black text-blue-400 font-mono">Max 20h/wk</span></div>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs">Print / PDF</button>
+        <button onclick="closeCertificateModal()" class="bg-slate-800 px-4 py-2 rounded-xl text-xs text-slate-300">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-qr" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-800 border border-slate-700 rounded-3xl max-w-sm w-full p-5 text-center shadow-2xl relative">
+      <button onclick="closeQRModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
+      <h3 class="font-bold text-base text-white mb-2">Campus Department Check-In</h3>
+      <div class="w-44 h-44 mx-auto bg-slate-950 rounded-2xl border-2 border-dashed border-blue-500 flex items-center justify-center text-4xl">📷</div>
+      <div class="mt-4 flex flex-col gap-2">
+        <button onclick="confirmQRPunch('in')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-xl text-xs">✓ Shift Check-In</button>
+        <button onclick="confirmQRPunch('out')" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 rounded-xl text-xs">✕ Shift Departure</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-judges" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-850 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 text-slate-200 shadow-2xl relative">
+      <button onclick="closeJudgeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">✕</button>
+      <h2 class="text-lg font-bold text-white mb-2">EasySWork for Prompt Wars 2026 × SRM ACM</h2>
+      <p class="text-xs text-slate-300">Empowering student workers with transparent hourly stipends, exam-fatigue alerts, 100% anonymous anti-exploitation whistleblowing, and verifiable skill passports.</p>
+      <div class="mt-4 text-right"><button onclick="closeJudgeModal()" class="bg-blue-600 px-4 py-2 rounded-xl text-xs font-bold text-white">Close</button></div>
+    </div>
+  </div>
+
+  <script>
+    let currentSector = 'research';
+    let currentRole = 'student';
+    let currentLang = 'ta';
+    let isClockedIn = true;
+    let isOnBreak = false;
+    let shiftSeconds = 3 * 3600 + 45 * 60 + 12;
+    let shiftTimerInterval = null;
+    let selectedGrievanceCat = 'wage';
+    let isPhoneFrameToggled = false;
+    let isOfflineMode = false;
+    let isTourActive = false;
+    let tourStep = 1;
+    const TOTAL_TOUR_STEPS = 6;
+    let reflexStartTime = 0;
+    let reflexTimeout = null;
+    let reflexState = 'idle';
+
+    const I18N = {
+      en: {
+        voiceAssist: "Voice Guidance",
+        toggleView: "Phone Frame",
+        tabShift: "Shift & Pay",
+        tabPayslip: "Stipend",
+        tabGrievance: "SafeSpeak",
+        tabPassport: "Skill ID",
+        tabExam: "Study-Fit",
+        geofenceVerified: "Campus GPS Verified:",
+        shiftActive: "Student Shift Active",
+        shiftPaused: "On Study Pause",
+        shiftEnded: "Clocked Out",
+        clockInBtn: "Start Shift",
+        clockOutBtn: "Clock Out",
+        takeBreakBtn: "Study Pause (Break)",
+        resumeShiftBtn: "Resume Shift",
+        scanGateQr: "Scan Department QR Check-In",
+        otActive: "Hourly Stipend Accrual Active",
+        otDesc: "Transparent stipend rate. Every minute of lab supervision is compensated.",
+        fatigueTitle: "Study-Work Ethics & Exam Safeguard",
+        fatigueSafe: "Healthy Balance (16h / 20h max)",
+        recentShifts: "Recent Verified Student Shifts",
+        payslipMonth: "Current Month Student Stipend Breakdown",
+        netWages: "Net Payable to Bank • 74 Hours Logged",
+        hearPayslip: "Hear Pay",
+        baseWage: "Base Teaching & Lab Hours",
+        otHours: "Weekend Hackathon / Fest Support (OT)",
+        incentive: "Academic Mentorship Bonus",
+        deductions: "Lab Safety & Equipment Insurance",
+        totalTakehome: "Total Direct Deposit to Student Account",
+        disputeSalary: "Dispute Stipend or Missing Hours?",
+        downloadSlip: "Download Payslip",
+        anonGuarantee: "100% Anonymous Anti-Retaliation Protection",
+        anonDesc: "Your identity is never disclosed to professors or supervisors. Encrypted token provided.",
+        reportTitle: "Report Campus Work Issue, Unpaid Hours, or Harassment",
+        category: "Category",
+        describeIssue: "Describe the Issue",
+        recordVoice: "🎙️ Record Voice Note",
+        recordingVoice: "🔴 Listening... Speak now",
+        siteLocation: "Department / Campus Location",
+        submitReport: "Submit Anonymous Student Grievance",
+        myReports: "My Tracked Reports",
+        passportHours: "Logged Work Hours",
+        passportSafety: "Work Ethics Score",
+        passportRatings: "Faculty Rating",
+        verifiedBadges: "Verified Competencies & Campus Credentials",
+        sharePassport: "Share Verifiable Skill Link with Employers",
+        speechExplanation: "Hello Aravind. Your total student stipend for this month is 14,800 Rupees. Your base payment for 60 hours is 12,000 Rupees. You completed 14 hours of weekend hackathon support earning 2,800 Rupees. Plus a 1,000 Rupee mentorship bonus. Equipment insurance deduction is 1,000 Rupees. Your payment has been deposited to your student bank account.",
+        smsText: "EasySWork Alert: Hello Aravind. Your 3.5-hr shift is logged. Stipend today: Rs. 750. Text HELP if forced to work during exam hours."
+      },
+      ta: {
+        voiceAssist: "குரல் வழிகாட்டி",
+        toggleView: "மொபைல் முறை",
+        tabShift: "பணி & சம்பளம்",
+        tabPayslip: "உதவித்தொகை",
+        tabGrievance: "புகார் பாதுகாப்பு",
+        tabPassport: "திறன் அட்டை",
+        tabExam: "தேர்வு சமநிலை",
+        geofenceVerified: "வளாக GPS சரிபார்க்கப்பட்டது:",
+        shiftActive: "மாணவர் பணி இயங்குகிறது",
+        shiftPaused: "படிப்பு இடைவேளையில்",
+        shiftEnded: "பணி முடிந்தது",
+        clockInBtn: "பணி தொடங்கு (Start)",
+        clockOutBtn: "வெளியேறு (Clock Out)",
+        takeBreakBtn: "படிப்பு இடைவேளை",
+        resumeShiftBtn: "பணியை தொடர்",
+        scanGateQr: "துறை QR ஸ்கேன் செய்",
+        otActive: "மணிநேர உதவித்தொகை கணக்கிடப்படுகிறது",
+        otDesc: "ஒவ்வொரு மணிநேரமும் வெளிப்படையாக கணக்கில் வைக்கப்படும்.",
+        fatigueTitle: "படிப்பு-வேலை சமநிலை & தேர்வு பாதுகாப்பு",
+        fatigueSafe: "சீரான நிலை (16 மணி / 20 மணி அதிகபட்சம்)",
+        recentShifts: "சமீபத்திய மாணவர் பணி பதிவுகள்",
+        payslipMonth: "மாதாந்திர மாணவர் உதவித்தொகை விவரம்",
+        netWages: "வங்கி கணக்கில் வரவு • 74 மணிநேரம்",
+        hearPayslip: "உதவித்தொகை கேள் (Listen)",
+        baseWage: "அடிப்படை கற்பித்தல் & ஆய்வக நேரம்",
+        otHours: "வார இறுதி ஹேக்கத்தான் கூடுதல் பணி",
+        incentive: "வழிகாட்டுதல் ஊக்கத்தொகை",
+        deductions: "ஆய்வக உபகரண காப்பீடு",
+        totalTakehome: "மாணவர் கணக்கில் வரவு வைக்கப்பட்ட தொகை",
+        disputeSalary: "உதவித்தொகையில் சந்தேகம் உள்ளதா?",
+        downloadSlip: "சீட்டு பதிவிறக்கு",
+        anonGuarantee: "100% ரகசியமான மாணவர் புகார் பாதுகாப்பு",
+        anonDesc: "உங்கள் பெயர் பேராசிரியர்களுக்கோ யாருக்குமோ தெரியாது. ரகசிய குறியீட்டு எண் வழங்கப்படும்.",
+        reportTitle: "ஊதியமின்மை, தேர்வு அழுத்தங்கள் அல்லது அநீதியை புகாரளி",
+        category: "வகை (Category)",
+        describeIssue: "பிரச்சனையை விவரிக்கவும்",
+        recordVoice: "🎙️ பேசி பதிவு செய் (Voice)",
+        recordingVoice: "🔴 கேட்கிறது... பேசவும்",
+        siteLocation: "துறை / வளாக இடம்",
+        submitReport: "ரகசிய புகாரை அனுப்பு",
+        myReports: "என் புகார்களின் நிலை",
+        passportHours: "வேலை செய்த மணிநேரம்",
+        passportSafety: "பணி நெறிமுறை",
+        passportRatings: "மதிப்பீடு",
+        verifiedBadges: "சரிபார்க்கப்பட்ட சான்றிதழ்கள்",
+        sharePassport: "புதிய நிறுவனங்களுடன் பகிர்",
+        speechExplanation: "வணக்கம் அரவிந்த். இந்த மாத உங்களின் மொத்த மாணவர் உதவித்தொகை 14 ஆயிரத்து 800 ரூபாய். 60 மணிநேர அடிப்படை பணிக்கு 12 ஆயிரம் ரூபாய். 14 மணிநேர கூடுதல் ஹேக்கத்தான் பணிக்கு 2 ஆயிரத்து 800 ரூபாய். வழிகாட்டுதல் போனஸ் 1000 ரூபாய். காப்பீட்டு கழிவு 1000 ரூபாய். பணம் உங்கள் வங்கிக் கணக்கில் வரவு வைக்கப்பட்டுவிட்டது.",
+        smsText: "EasySWork Alert: வணக்கம் Aravind. உங்கள் 3.5 மணிநேர பணி முடிந்தது. இன்றைய உதவித்தொகை: ₹750. தேர்வு காலத்தில் அதிக வேலை இருந்தால் 880099 எண்ணில் தெரிவிக்கவும்."
+      },
+      hi: {
+        voiceAssist: "आवाज़ सहायता",
+        toggleView: "मोबाइल स्क्रीन",
+        tabShift: "शिफ्ट व वेतन",
+        tabPayslip: "स्टाइपेंड",
+        tabGrievance: "शिकायत",
+        tabPassport: "स्किल आईडी",
+        tabExam: "अध्ययन संतुलन",
+        geofenceVerified: "कैंपस जीपीएस सत्यापित:",
+        shiftActive: "छात्र शिफ्ट सक्रिय है",
+        shiftPaused: "अध्ययन ब्रेक पर",
+        shiftEnded: "काम समाप्त",
+        clockInBtn: "काम शुरू करें",
+        clockOutBtn: "क्लॉक आउट करें",
+        takeBreakBtn: "स्टडी ब्रेक लें",
+        resumeShiftBtn: "काम जारी रखें",
+        scanGateQr: "डिपार्टमेंट क्यूआर स्कैन करें",
+        otActive: "घंटेवार स्टाइपेंड गणना चालू है",
+        otDesc: "लैब एवं टीचिंग ड्यूटी के हर घंटे का पारदर्शी भुगतान।",
+        fatigueTitle: "पढ़ाई-काम संतुलन एवं परीक्षा सुरक्षा",
+        fatigueSafe: "सुरक्षित संतुलन (16 घंटे / 20 घंटे अधिकतम)",
+        recentShifts: "हाल ही की सत्यापित शिफ्टें",
+        payslipMonth: "इस माह का छात्र स्टाइपेंड विवरण",
+        netWages: "खाते में देय राशि • 74 घंटे",
+        hearPayslip: "स्टाइपेंड सुनें",
+        baseWage: "मूल लैब एवं टीचिंग घंटे",
+        otHours: "वीकेंड फेस्ट/हैकथॉन ड्यूटी (अतिरिक्त)",
+        incentive: "मेंटरशिप बोनस",
+        deductions: "लैब सेफ्टी कवर",
+        totalTakehome: "छात्र बैंक खाते में कुल राशि",
+        disputeSalary: "स्टाइपेंड पर सवाल या शिकायत?",
+        downloadSlip: "स्लिप डाउनलोड करें",
+        anonGuarantee: "100% गुमनाम छात्र शिकायत सुरक्षा",
+        anonDesc: "प्रोफेसर या विभाग से आपकी पहचान पूरी तरह गुप्त रहेगी।",
+        reportTitle: "अवैतनिक घंटे, परीक्षा दबाव या दुर्व्यवहार दर्ज करें",
+        category: "श्रेणी",
+        describeIssue: "समस्या का विवरण दें",
+        recordVoice: "🎙️ बोलकर दर्ज करें",
+        recordingVoice: "🔴 सुन रहा है... बोलें",
+        siteLocation: "विभाग / कैंपस स्थल",
+        submitReport: "सुरक्षित शिकायत भेजें",
+        myReports: "मेरी दर्ज शिकायतें",
+        passportHours: "कुल कार्य घंटे",
+        passportSafety: "कार्य निष्ठा",
+        passportRatings: "रेटिंग",
+        verifiedBadges: "सत्यापित योग्यताएं",
+        sharePassport: "नियोक्ताओं के साथ साझा करें",
+        speechExplanation: "नमस्ते अरविंद। इस महीने का आपका कुल छात्र स्टाइपेंड 14,800 रुपये है। साठ घंटे के मूल कार्य के 12,000 रुपये। 14 घंटे के अतिरिक्त वीकेंड कार्य के 2,800 रुपये मिले हैं। राशि आपके खाते में भेज दी गई है।",
+        smsText: "EasySWork: नमस्ते Aravind. आपकी 3.5 घंटे की ड्यूटी दर्ज हुई। आज का स्टाइपेंड: ₹750।"
+      },
+      te: {
+        voiceAssist: "వాయిస్ గైడ్",
+        toggleView: "మొబైల్ మోడ్",
+        tabShift: "షిఫ్ట్ & పే",
+        tabPayslip: "స్టైపెండ్",
+        tabGrievance: "ఫిర్యాదు",
+        tabPassport: "స్కిల్ ఐడీ",
+        tabExam: "చదువు సమతుల్యత",
+        geofenceVerified: "క్యాంపస్ GPS ధృవీకరించబడింది:",
+        shiftActive: "విద్యార్థి షిఫ్ట్ నడుస్తోంది",
+        shiftPaused: "స్టడీ బ్రేక్ లో ఉన్నారు",
+        shiftEnded: "షిఫ్ట్ ముగిసింది",
+        clockInBtn: "పని ప్రారంభించు",
+        clockOutBtn: "లాగ్ అవుట్",
+        takeBreakBtn: "స్టడీ బ్రేక్",
+        resumeShiftBtn: "పని కొనసాగించండి",
+        scanGateQr: "డిపార్ట్‌మెంట్ QR స్కాన్",
+        otActive: "స్టైపెండ్ లెక్కింపు నడుస్తోంది",
+        otDesc: "ప్రతి పని గంట పారదర్శకంగా నమోదు చేయబడుతుంది.",
+        fatigueTitle: "చదువు-పని సమతుల్యత & పరీక్ష రక్షణ",
+        fatigueSafe: "ఆరోగ్యకరమైన సమతుల్యత (గరిష్టం 20 గంటలు)",
+        recentShifts: "ఇటీవలి షిఫ్టులు",
+        payslipMonth: "ఈ నెల స్టైపెండ్ వివరాలు",
+        netWages: "బ్యాంక్ ఖాతాలో జమ అయ్యే మొత్తం",
+        hearPayslip: "స్టైపెండ్ వినండి",
+        baseWage: "ప్రాథమిక ల్యాబ్ పని గంటలు",
+        otHours: "అదనపు హ్యాకథాన్ సపోర్ట్",
+        incentive: "మెంటర్‌షిప్ ప్రోత్సాహకం",
+        deductions: "ల్యాబ్ భద్రతా బీమా",
+        totalTakehome: "మొత్తం విద్యార్థి బ్యాంక్ బదిలీ",
+        disputeSalary: "స్టైపెండ్‌పై సందేహం ఉందా?",
+        downloadSlip: "స్లిప్ డౌన్‌లోడ్",
+        anonGuarantee: "100% గోప్యమైన విద్యార్థి రక్షణ",
+        anonDesc: "మీ గుర్తింపు ఎవరికీ తెలియదు. ఎన్‌క్రిప్ట్ చేసిన కోడ్ ఇవ్వబడుతుంది.",
+        reportTitle: "సమస్య లేదా అన్యాయాన్ని నివేదించండి",
+        category: "వర్గం",
+        describeIssue: "సమస్యను వివరించండి",
+        recordVoice: "🎙️ మాట్లాడి రికార్డ్ చేయండి",
+        recordingVoice: "🔴 వింటోంది... మాట్లాడండి",
+        siteLocation: "డిపార్ట్‌మెంట్ / క్యాంపస్ లొకేషన్",
+        submitReport: "గోప్యంగా నివేదించండి",
+        myReports: "నా ఫిర్యాదులు",
+        passportHours: "పని చేసిన గంటలు",
+        passportSafety: "పనితీరు స్కోరు",
+        passportRatings: "రేటింగ్",
+        verifiedBadges: "ధృవీకరించబడిన నైపుణ్యాలు",
+        sharePassport: "నైపుణ్యాలను షేర్ చేయండి",
+        speechExplanation: "నమస్కారం అరవింద్. ఈ నెల మీ మొత్తం స్టైపెండ్ 14 వేల 800 రూపాయలు. మీ బ్యాంక్ ఖాతాలో జమ చేయబడింది.",
+        smsText: "EasySWork Alert: నమస్కారం Aravind. 3.5 గంటల పని నమోదైంది. ఈ రోజు స్టైపెండ్: ₹750."
+      }
+    };
+
+    const SECTOR_DATA = {
+      research: {
+        name: "University Research & Academic Labs",
+        orgFull: "SRM University – Academic & Research Laboratories",
+        student: {
+          name: "Aravind Krishna",
+          initials: "AK",
+          role: "B.Tech CSE • Teaching & Lab Assistant",
+          id: "STU-2026-CSE",
+          location: "SRM Tech Park AI Lab 4 (Within 15m)",
+          hours: "340 hrs",
+          badges: [
+            { title: "Deep Learning Lab Supervisor", issuer: "SRM School of Computing", year: "2025", level: "Senior TA" },
+            { title: "Campus Hazardous Chemical Safety", issuer: "Biotech Safety Committee", year: "2024", level: "Level 2 Certified" },
+            { title: "Python Peer Tutoring Certification", issuer: "SRM ACM Student Chapter", year: "2026", level: "Verified Mentor" }
+          ]
+        },
+        employer: {
+          activeCount: "52 / 60",
+          fatigueCount: "4 Students",
+          fatigueSub: ">20h/wk or upcoming exams",
+          openHazards: 2,
+          roster: [
+            { id: "S-101", name: "Aravind Krishna", role: "AI Lab TA", time: "08:30 AM", hours: "16.0h / wk", status: "Normal", rate: "₹200/hr", risk: "Low Risk", actionText: "Study Pause" },
+            { id: "S-102", name: "Kavitha R", role: "Biotech Lab Assistant", time: "09:00 AM", hours: "24.5h / wk", status: "Critical", rate: "₹220/hr", risk: "Exam Conflict (>20h)", actionText: "Cap Hours" },
+            { id: "S-103", name: "Rohan Varma", role: "Physics Lab Demonstrator", time: "10:00 AM", hours: "12.0h / wk", status: "Normal", rate: "₹180/hr", risk: "Low Risk", actionText: "Log Review" },
+            { id: "S-104", name: "Meera Nair", role: "Research Fellow Assistant", time: "07:30 AM", hours: "26.0h / wk", status: "Critical", rate: "₹250/hr", risk: "Academic Stress", actionText: "Relieve Duty" }
+          ],
+          grievances: [
+            { token: "ANON-9102", cat: "Unpaid Extra Hours", title: "Weekend Hackathon evaluation hours (8 hours) not added to monthly stipend roll", area: "Tech Park 4th Floor", date: "Yesterday", status: "Investigating", sla: "1h 30m left", severity: "High" },
+            { token: "ANON-8401", cat: "Lab Safety", title: "Chemical waste container fume seal leaking in Biotech Lab 3", area: "Bio Block Level 2", date: "3 hours ago", status: "Open", sla: "2h 15m left", severity: "High" }
+          ],
+          audit: [
+            { dept: "Computer Science & AI Labs", count: 28, stdHours: "1,120 hrs", otHours: "140 hrs", rate: "₹200/hr", status: "100% Verified" },
+            { dept: "Biotech & Genetic Engineering", count: 16, stdHours: "640 hrs", otHours: "95 hrs", rate: "₹220/hr", status: "100% Verified" }
+          ]
+        }
+      },
+      events: {
+        name: "Campus Events, Festivals & Student Gigs",
+        orgFull: "SRM Directorate of Student Affairs & Event Operations",
+        student: {
+          name: "Priya Swaminathan",
+          initials: "PS",
+          role: "B.Tech ECE • Campus Audio/Visual & Tech Fest Lead",
+          id: "STU-2026-FEST",
+          location: "SRM Main Auditorium & Stage Hub (Within 25m)",
+          hours: "280 hrs",
+          badges: [
+            { title: "Stage Electrical & Rigging Safety", issuer: "Directorate of Student Affairs", year: "2025", level: "Lead Crew" },
+            { title: "Campus Crowd & First Response", issuer: "SRM Medical Centre", year: "2026", level: "Verified" }
+          ]
+        },
+        employer: {
+          activeCount: "78 / 85",
+          fatigueCount: "7 Students",
+          fatigueSub: "Back-to-back night fest setup (>12h continuous)",
+          openHazards: 3,
+          roster: [
+            { id: "E-201", name: "Priya Swaminathan", role: "Audio/Visual Lead", time: "07:00 AM", hours: "18.5h / wk", status: "Normal", rate: "₹250/hr", risk: "Low Risk", actionText: "Break Alert" },
+            { id: "E-202", name: "Dinesh Karthik", role: "Stage Rigging Crew", time: "Yesterday 06:00 PM", hours: "14.0h continuous", status: "Critical", rate: "₹220/hr", risk: "Extreme Fatigue", actionText: "Enforce Rest" }
+          ],
+          grievances: [
+            { token: "ANON-6621", cat: "Forced Overtime", title: "Stage setup team required to stay until 3 AM on night before Mid-Term Exam", area: "SRM Main Auditorium", date: "4 hours ago", status: "Investigating", sla: "1h 10m left", severity: "High" }
+          ],
+          audit: [
+            { dept: "Technical Audio & Stage Crew", count: 35, stdHours: "700 hrs", otHours: "310 hrs", rate: "₹250/hr", status: "100% Verified" }
+          ]
+        }
+      }
+    };
+
+    let studentTickets = [
+      { token: "ANON-9102", cat: "Unpaid Extra Hours", text: "Weekend hackathon grading hours (8 hours) not added to stipend roll.", status: "In Investigation", date: "Today, 09:15 AM", sla: "SLA: 2 hours left" },
+      { token: "ANON-7741", cat: "Lab Safety", text: "Exposed wire on table 4.", status: "Resolved & Repaired", date: "Oct 24, 2026", sla: "Safety officer fixed cord" }
+    ];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      startShiftTimer();
+      renderSector();
+      updateLanguageUI();
+
+      setInterval(() => {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const el = document.getElementById('current-clock');
+        if (el) el.innerText = timeStr;
+      }, 1000);
+    });
+
+    function startShiftTimer() {
+      if (shiftTimerInterval) clearInterval(shiftTimerInterval);
+      shiftTimerInterval = setInterval(() => {
+        if (isClockedIn && !isOnBreak) {
+          shiftSeconds++;
+          const hrs = Math.floor(shiftSeconds / 3600);
+          const mins = Math.floor((shiftSeconds % 3600) / 60);
+          const secs = shiftSeconds % 60;
+          const pad = (n) => String(n).padStart(2, '0');
+          const timerEl = document.getElementById('shift-live-timer');
+          if (timerEl) timerEl.innerText = `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
+
+          const totalMinutes = hrs * 60 + mins;
+          const stipendEarned = (totalMinutes * (200 / 60)).toFixed(2);
+          const otValEl = document.getElementById('ot-earned-val');
+          if (otValEl) otValEl.innerText = `+₹ ${stipendEarned}`;
+        }
+      }, 1000);
+    }
+
+    function toggleTourMode() {
+      if (isTourActive) exitTourMode();
+      else {
+        isTourActive = true;
+        tourStep = 1;
+        document.getElementById('tour-banner').classList.remove('hidden');
+        document.getElementById('lbl-tour-btn').innerText = "Stop Tour";
+        runTourStep(1);
+      }
+    }
+
+    function exitTourMode() {
+      isTourActive = false;
+      document.getElementById('tour-banner').classList.add('hidden');
+      document.getElementById('lbl-tour-btn').innerText = "Start 60s Demo Tour";
+      clearTourHighlights();
+      showToast("Exited Demo Tour mode.", "info");
+    }
+
+    function nextTourStep() {
+      if (tourStep < TOTAL_TOUR_STEPS) {
+        tourStep++;
+        runTourStep(tourStep);
+      } else {
+        exitTourMode();
+        showToast("🎉 Tour complete! EasySWork is ready for judging.", "success");
+      }
+    }
+
+    function prevTourStep() {
+      if (tourStep > 1) {
+        tourStep--;
+        runTourStep(tourStep);
+      }
+    }
+
+    function clearTourHighlights() {
+      document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+    }
+
+    function runTourStep(step) {
+      clearTourHighlights();
+      document.getElementById('tour-step-badge').innerText = `${step}/${TOTAL_TOUR_STEPS}`;
+      const badge = document.getElementById('tour-step-title');
+      const desc = document.getElementById('tour-step-desc');
+
+      if (step === 1) {
+        switchPortal('student');
+        setStudentTab('shift');
+        badge.innerText = "Step 1: Student Attendance & Geofenced Campus Punch";
+        desc.innerText = "Automatic GPS campus validation + Department QR check-in calculates precise student hourly pay.";
+        document.getElementById('tour-box-geofence')?.classList.add('tour-highlight');
+        document.getElementById('tour-box-clock')?.classList.add('tour-highlight');
+      } else if (step === 2) {
+        switchPortal('student');
+        setStudentTab('payslip');
+        badge.innerText = "Step 2: Transparent Stipend & Multilingual Audio Readout";
+        desc.innerText = "Zero unpaid hours! Tap 'Hear Pay' to hear the exact math in Tamil, Hindi, or Telugu.";
+        document.getElementById('tour-box-payslip-audio')?.classList.add('tour-highlight');
+      } else if (step === 3) {
+        switchPortal('student');
+        setStudentTab('grievance');
+        badge.innerText = "Step 3: SafeSpeak Anonymous Student Whistleblower Portal";
+        desc.innerText = "Students report unpaid hours or exam exploitation without fearing professor retaliation.";
+        document.getElementById('tour-box-voice-hazard')?.classList.add('tour-highlight');
+      } else if (step === 4) {
+        switchPortal('student');
+        setStudentTab('passport');
+        badge.innerText = "Step 4: Student Skill Passport";
+        desc.innerText = "Verified campus job hours, TA credentials, and faculty peer ratings for student resumes.";
+        document.getElementById('tour-box-passport')?.classList.add('tour-highlight');
+      } else if (step === 5) {
+        switchPortal('employer');
+        badge.innerText = "Step 5: Campus Employer Dashboard & Exam Overwork Radar";
+        desc.innerText = "Detects students scheduled >20h/week during mid-term exam weeks and resolves grievances in real-time.";
+        document.getElementById('tour-box-adm-fatigue')?.classList.add('tour-highlight');
+        document.getElementById('tour-box-adm-tickets')?.classList.add('tour-highlight');
+      } else if (step === 6) {
+        switchPortal('employer');
+        openCertificateModal();
+        badge.innerText = "Step 6: Official SDG 8 Student Labor Compliance Certificate";
+        desc.innerText = "Institutional accreditation for universities guaranteeing fair wages and ethical youth employment.";
+      }
+    }
+
+    function toggleNetworkMode() {
+      isOfflineMode = !isOfflineMode;
+      const netIcon = document.getElementById('net-icon');
+      const netLabel = document.getElementById('net-label');
+      const offlinePill = document.getElementById('offline-sync-pill');
+      if (isOfflineMode) {
+        netIcon.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+        netLabel.innerText = "Campus Offline";
+        offlinePill.classList.remove('hidden');
+        showToast("📴 Offline Mode active: Student logs cached locally in LocalStorage.", "warning");
+      } else {
+        netIcon.className = "w-2 h-2 rounded-full bg-blue-400";
+        netLabel.innerText = "Online (Synced)";
+        offlinePill.classList.add('hidden');
+        showToast("⚡ Back Online! Cached student records synchronized with university ledger.", "success");
+      }
+    }
+
+    function triggerEmergencySOS() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5);
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+      } catch (e) {}
+      showToast("🚨 EMERGENCY SOS BROADCAST: Geofenced alert sent to Campus Security Control Room!", "error");
+    }
+
+    function handleReflexClick() {
+      const target = document.getElementById('reflex-target');
+      const icon = document.getElementById('reflex-icon');
+      const msg = document.getElementById('reflex-msg');
+
+      if (reflexState === 'idle' || reflexState === 'done') {
+        reflexState = 'waiting';
+        target.className = "w-44 h-44 mx-auto rounded-full bg-amber-600 border-4 border-amber-400 flex flex-col items-center justify-center cursor-pointer select-none animate-pulse";
+        icon.innerText = "✋";
+        msg.innerText = "Wait for GREEN...";
+        const delay = 1500 + Math.random() * 2500;
+        reflexTimeout = setTimeout(() => {
+          reflexState = 'ready';
+          reflexStartTime = Date.now();
+          target.className = "w-44 h-44 mx-auto rounded-full bg-emerald-500 border-4 border-emerald-300 flex flex-col items-center justify-center cursor-pointer select-none scale-105 glow-pulse";
+          icon.innerText = "⚡";
+          msg.innerText = "TAP NOW!";
+        }, delay);
+      } else if (reflexState === 'waiting') {
+        clearTimeout(reflexTimeout);
+        reflexState = 'idle';
+        target.className = "w-44 h-44 mx-auto rounded-full bg-rose-700 border-4 border-rose-500 flex flex-col items-center justify-center cursor-pointer select-none";
+        icon.innerText = "⚠️";
+        msg.innerText = "Too early! Retry";
+      } else if (reflexState === 'ready') {
+        const reactionTime = Date.now() - reflexStartTime;
+        reflexState = 'done';
+        target.className = "w-44 h-44 mx-auto rounded-full bg-slate-800 border-4 border-blue-400 flex flex-col items-center justify-center cursor-pointer select-none";
+        icon.innerText = "✓";
+        msg.innerText = `${reactionTime} ms!`;
+        const scoreEl = document.getElementById('reflex-score-val');
+        const clearanceEl = document.getElementById('reflex-clearance-val');
+        if (reactionTime < 350) {
+          scoreEl.innerText = `${reactionTime} ms (Passed)`;
+          scoreEl.className = "font-mono font-bold text-emerald-400";
+          clearanceEl.innerText = "✓ Fit for Campus Work Duty";
+          showToast(`✓ Reaction Speed: ${reactionTime}ms. Cognitive alertness confirmed!`, "success");
+        } else {
+          scoreEl.innerText = `${reactionTime} ms (Exam Fatigue)`;
+          scoreEl.className = "font-mono font-bold text-rose-400";
+          clearanceEl.innerText = "⚠️ Study Relief Recommended";
+          showToast(`Reaction time ${reactionTime}ms indicates academic fatigue. Advisory dispatched.`, "warning");
+        }
+      }
+    }
+
+    function switchSector(sec) {
+      currentSector = sec;
+      const btnRes = document.getElementById('btn-ind-research');
+      const btnEv = document.getElementById('btn-ind-events');
+      if (sec === 'research') {
+        btnRes.className = "px-2 py-1 rounded-lg font-semibold transition-all flex items-center gap-1 bg-blue-600 text-white shadow";
+        btnEv.className = "px-2 py-1 rounded-lg font-medium text-slate-300 hover:text-white transition-all flex items-center gap-1";
+      } else {
+        btnEv.className = "px-2 py-1 rounded-lg font-semibold transition-all flex items-center gap-1 bg-blue-600 text-white shadow";
+        btnRes.className = "px-2 py-1 rounded-lg font-medium text-slate-300 hover:text-white transition-all flex items-center gap-1";
+      }
+      renderSector();
+      showToast(`Switched Sector to: ${SECTOR_DATA[sec].name}`, "info");
+    }
+
+    function renderSector() {
+      const data = SECTOR_DATA[currentSector];
+      document.getElementById('student-name').innerText = data.student.name;
+      document.getElementById('student-initials').innerText = data.student.initials;
+      document.getElementById('student-role').innerText = `${data.student.role} • ${data.name}`;
+      document.getElementById('student-badge').innerText = `ID: ${data.student.id}`;
+      document.getElementById('geo-location-name').innerText = data.student.location;
+      document.getElementById('passport-student-name').innerText = data.student.name;
+      document.getElementById('passport-student-domain').innerText = `${data.student.role} (Verified)`;
+      document.getElementById('passport-hours-val').innerText = data.student.hours;
+      document.getElementById('cert-org-name').innerText = data.orgFull;
+
+      const badgesContainer = document.getElementById('passport-badges-list');
+      badgesContainer.innerHTML = data.student.badges.map(b => `
+        <div class="bg-slate-800/90 rounded-xl p-2.5 border border-slate-700 flex items-center justify-between text-xs">
+          <div><span class="font-bold text-white block">${b.title}</span><span class="text-[10px] text-slate-400">Issued by ${b.issuer} (${b.year})</span></div>
+          <span class="bg-blue-500/20 text-blue-300 text-[10px] px-2 py-0.5 rounded font-bold">${b.level}</span>
+        </div>
+      `).join('');
+
+      renderStudentRecentShifts();
+      renderEmployerDashboard();
+    }
+
+    function renderStudentRecentShifts() {
+      const isRes = currentSector === 'research';
+      const list = document.getElementById('student-recent-shifts-list');
+      list.innerHTML = `
+        <div class="flex items-center justify-between bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/40">
+          <div><span class="font-bold text-white">Yesterday (${isRes ? 'SRM Tech Park AI Lab' : 'Auditorium Main Stage Setup'})</span><span class="text-[11px] text-slate-400 block">08:30 AM - 12:30 PM (4.0 hrs logged)</span></div>
+          <div class="text-right"><span class="font-mono text-blue-400 font-bold">+₹ 800.00</span><span class="text-[10px] text-emerald-300 block font-semibold">Standard Shift</span></div>
+        </div>
+      `;
+    }
+
+    function renderEmployerDashboard() {
+      const data = SECTOR_DATA[currentSector];
+      const emp = data.employer;
+      document.getElementById('adm-metric-active').innerText = emp.activeCount;
+      document.getElementById('adm-metric-fatigue').innerText = emp.fatigueCount;
+      document.getElementById('adm-metric-fatigue-sub').innerText = emp.fatigueSub;
+      document.getElementById('adm-metric-grievances').innerText = `${emp.openHazards} Open Tickets`;
+      document.getElementById('adm-roster-sector-title').innerText = `${data.name} – Active Students`;
+
+      const tbody = document.getElementById('adm-roster-tbody');
+      tbody.innerHTML = emp.roster.map(r => `
+        <tr class="hover:bg-slate-700/30">
+          <td class="py-3 px-3"><div class="font-bold text-white">${r.name}</div><div class="text-[10px] text-slate-400">ID: ${r.id}</div></td>
+          <td class="py-3 px-3">${r.role}</td>
+          <td class="py-3 px-3 font-mono text-slate-300">${r.time}</td>
+          <td class="py-3 px-3 font-mono font-bold text-white">${r.hours}</td>
+          <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-700 border border-slate-600">${r.risk}</span></td>
+          <td class="py-3 px-3 font-mono text-amber-300 font-bold">${r.rate}</td>
+          <td class="py-3 px-3 text-right"><button class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-2.5 py-1 rounded-lg text-[11px]">${r.actionText}</button></td>
+        </tr>
+      `).join('');
+
+      const gContainer = document.getElementById('adm-grievance-cards');
+      gContainer.innerHTML = emp.grievances.map(g => `
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-4 flex justify-between items-center text-xs">
+          <div><div class="flex items-center gap-2 mb-1"><span class="font-mono font-bold text-indigo-400">${g.token}</span><span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">${g.cat}</span></div><p class="text-white">${g.title}</p></div>
+          <button onclick="resolveGrievanceAdmin('${g.token}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-xl shadow">✓ Mark Resolved</button>
+        </div>
+      `).join('');
+
+      const fContainer = document.getElementById('fatigue-radar-cards');
+      fContainer.innerHTML = emp.roster.filter(r => r.risk !== "Low Risk").map(r => `
+        <div class="bg-slate-900 border border-amber-500/30 rounded-2xl p-4 text-xs space-y-1">
+          <div class="flex justify-between font-bold text-white"><span>${r.name}</span><span class="text-rose-400">${r.risk}</span></div>
+          <p class="text-slate-400">Scheduled for ${r.hours}. Risk of violating campus academic study policy.</p>
+        </div>
+      `).join('');
+
+      const aTbody = document.getElementById('audit-table-body');
+      aTbody.innerHTML = emp.audit.map(a => `
+        <tr class="hover:bg-slate-700/30">
+          <td class="py-3 px-3 font-semibold text-white">${a.dept}</td>
+          <td class="py-3 px-3 font-mono">${a.count}</td>
+          <td class="py-3 px-3 font-mono text-slate-300">${a.stdHours}</td>
+          <td class="py-3 px-3 font-mono text-amber-300 font-bold">${a.otHours}</td>
+          <td class="py-3 px-3 font-mono text-white">${a.rate}</td>
+          <td class="py-3 px-3"><span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full font-bold">${a.status}</span></td>
+        </tr>
+      `).join('');
+
+      renderStudentTickets();
+    }
+
+    function renderStudentTickets() {
+      const list = document.getElementById('student-tickets-list');
+      list.innerHTML = studentTickets.map(t => `
+        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/80 text-xs space-y-1">
+          <div class="flex justify-between"><span class="font-mono text-[10px] font-bold text-indigo-400">${t.token}</span><span class="text-[10px] text-blue-300 bg-blue-500/20 px-2 py-0.5 rounded-full">${t.status}</span></div>
+          <p class="text-white">${t.text}</p>
+        </div>
+      `).join('');
+    }
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      updateLanguageUI();
+      showToast(`Language set to ${lang.toUpperCase()}`, "success");
+    }
+
+    function updateLanguageUI() {
+      const t = I18N[currentLang] || I18N.en;
+      safeSetText('lbl-voice-assist', t.voiceAssist);
+      safeSetText('lbl-toggle-view', t.toggleView);
+      safeSetText('tab-txt-shift', t.tabShift);
+      safeSetText('tab-txt-payslip', t.tabPayslip);
+      safeSetText('tab-txt-grievance', t.tabGrievance);
+      safeSetText('tab-txt-passport', t.tabPassport);
+      safeSetText('tab-txt-exam', t.tabExam);
+      safeSetText('lbl-geofence', t.geofenceVerified);
+      safeSetText('shift-status-badge', isClockedIn ? t.shiftActive : (isOnBreak ? t.shiftPaused : t.shiftEnded));
+      safeSetText('btn-shift-action-txt', isClockedIn ? t.clockOutBtn : t.clockInBtn);
+      safeSetText('btn-break-action-txt', isOnBreak ? t.resumeShiftBtn : t.takeBreakBtn);
+      safeSetText('lbl-scan-qr', t.scanGateQr);
+      safeSetText('lbl-ot-active', t.otActive);
+      safeSetText('lbl-ot-desc', t.otDesc);
+      safeSetText('lbl-fatigue-title', t.fatigueTitle);
+      safeSetText('fatigue-safety-badge', t.fatigueSafe);
+      safeSetText('lbl-recent-shifts', t.recentShifts);
+      safeSetText('lbl-payslip-month', t.payslipMonth);
+      safeSetText('lbl-net-wages', t.netWages);
+      safeSetText('lbl-audio-read', t.hearPayslip);
+      safeSetText('lbl-base-rate', t.baseWage);
+      safeSetText('lbl-ot-item', t.otHours);
+      safeSetText('lbl-allowance-item', t.incentive);
+      safeSetText('lbl-deductions-item', t.deductions);
+      safeSetText('lbl-total-takehome', t.totalTakehome);
+      safeSetText('lbl-dispute-btn', t.disputeSalary);
+      safeSetText('lbl-download-slip', t.downloadSlip);
+      safeSetText('lbl-anon-guarantee', t.anonGuarantee);
+      safeSetText('lbl-anon-desc', t.anonDesc);
+      safeSetText('lbl-report-hazard-title', t.reportTitle);
+      safeSetText('lbl-select-category', t.category);
+      safeSetText('lbl-describe-issue', t.describeIssue);
+      safeSetText('lbl-record-voice', t.recordVoice);
+      safeSetText('lbl-hazard-loc', t.siteLocation);
+      safeSetText('lbl-submit-report', t.submitReport);
+      safeSetText('lbl-my-reports', t.myReports);
+      safeSetText('lbl-passport-hours', t.passportHours);
+      safeSetText('lbl-passport-safety', t.passportSafety);
+      safeSetText('lbl-passport-ratings', t.passportRatings);
+      safeSetText('lbl-verified-badges', t.verifiedBadges);
+      safeSetText('lbl-share-passport', t.sharePassport);
+      safeSetText('sms-body-text', t.smsText);
+    }
+
+    function safeSetText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.innerText = text;
+    }
+
+    function speakCurrentContext() {
+      const t = I18N[currentLang] || I18N.en;
+      speakText(t.speechExplanation);
+    }
+
+    function readPayslipAloud() {
+      const t = I18N[currentLang] || I18N.en;
+      speakText(t.speechExplanation);
+      showToast("🔊 Reading student stipend details aloud...", "info");
+    }
+
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const langMap = { en: 'en-IN', ta: 'ta-IN', hi: 'hi-IN', te: 'te-IN' };
+        utterance.lang = langMap[currentLang] || 'en-US';
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function toggleClockAction() {
+      isClockedIn = !isClockedIn;
+      updateLanguageUI();
+      showToast(isClockedIn ? "Student check-in verified via campus geofence!" : "Student shift ended & hours logged to stipend ledger!", "success");
+    }
+
+    function toggleBreakAction() {
+      isOnBreak = !isOnBreak;
+      updateLanguageUI();
+      showToast(isOnBreak ? "Study pause logged" : "Resumed lab duty", "info");
+    }
+
+    function openQRScannerModal() { document.getElementById('modal-qr').classList.remove('hidden'); }
+    function closeQRModal() { document.getElementById('modal-qr').classList.add('hidden'); }
+
+    function confirmQRPunch(type) {
+      closeQRModal();
+      isClockedIn = (type === 'in');
+      updateLanguageUI();
+      showToast(type === 'in' ? "✓ Department Gate QR Scanned!" : "✓ Departure QR Scanned!", "success");
+    }
+
+    function selectGrievanceCategory(cat) {
+      selectedGrievanceCat = cat;
+      ['wage', 'safety', 'exam', 'harassment'].forEach(c => {
+        const btn = document.getElementById(`cat-btn-${c}`);
+        btn.className = (c === cat) ? "cat-pill py-2 px-3 rounded-xl border border-blue-500 bg-blue-500/20 text-blue-300 font-bold text-left" : "cat-pill py-2 px-3 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 font-medium text-left";
+      });
+    }
+
+    function triggerVoiceNoteRecording() {
+      const btn = document.getElementById('btn-voice-record');
+      const textarea = document.getElementById('grievance-textarea');
+      const t = I18N[currentLang] || I18N.en;
+      btn.innerText = t.recordingVoice;
+      setTimeout(() => {
+        btn.innerText = t.recordVoice;
+        let transcript = "Lab supervisor asked me to stay for 6 extra hours during semester exam week without recording attendance.";
+        if (currentLang === 'ta') transcript = "செமஸ்டர் தேர்வு காலத்தில் வருகைப் பதிவேட்டில் குறிப்பிடாமல் 6 மணிநேரம் கூடுதல் வேலை செய்ய பேராசிரியர் வற்புறுத்துகிறார்.";
+        else if (currentLang === 'hi') transcript = "सेमेस्टर परीक्षा के दौरान बिना उपस्थिति दर्ज किए 6 अतिरिक्त घंटे काम करने का दबाव बनाया जा रहा है।";
+        else if (currentLang === 'te') transcript = "సెమిస్టర్ పరీక్షల సమయంలో హాజరు నమోదు చేయకుండా అదనపు గంటలు పనిచేయమని ఒత్తిడి చేస్తున్నారు.";
+        textarea.value = transcript;
+        showToast("🎙️ Student voice note transcribed!", "success");
+      }, 1500);
+    }
+
+    function submitGrievance() {
+      const textarea = document.getElementById('grievance-textarea');
+      if (!textarea.value.trim()) { showToast("Please describe the issue", "error"); return; }
+      const token = `ANON-${Math.floor(1000 + Math.random() * 9000)}`;
+      studentTickets.unshift({ token: token, cat: "Student Issue", text: textarea.value.trim(), status: "Submitted (Open)", date: "Just now", sla: "SLA: 2h" });
+      textarea.value = "";
+      renderStudentTickets();
+      showToast(`Safe Student Grievance Submitted! Token: ${token} (Identity 100% Protected)`, "success");
+    }
+
+    function disputeSalaryAction() {
+      setStudentTab('grievance');
+      selectGrievanceCategory('wage');
+      document.getElementById('grievance-textarea').value = "Stipend discrepancy: Weekend Hackathon 8 extra hours not credited.";
+    }
+
+    function downloadSalarySlip() { showToast("📥 Official Student Payslip PDF generated with SRM verification hash!", "success"); }
+    function sharePassport() { showToast("🔗 Verifiable Student Skill Link copied to clipboard!", "success"); }
+
+    function resolveGrievanceAdmin(token) {
+      showToast(`Ticket ${token} marked as resolved! Direct stipend adjustment posted.`, "success");
+    }
+
+    function exportRosterCSV() { showToast("Student Roster CSV Exported!", "success"); }
+
+    function switchPortal(role) {
+      currentRole = role;
+      const studentPortal = document.getElementById('student-portal');
+      const employerPortal = document.getElementById('employer-portal');
+      const btnStudent = document.getElementById('btn-student-view');
+      const btnEmployer = document.getElementById('btn-employer-view');
+      if (role === 'student') {
+        studentPortal.classList.remove('hidden');
+        employerPortal.classList.add('hidden');
+        btnStudent.className = "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-blue-500 text-slate-950 shadow-sm";
+        btnEmployer.className = "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all";
+      } else {
+        studentPortal.classList.add('hidden');
+        employerPortal.classList.remove('hidden');
+        btnEmployer.className = "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-blue-500 text-slate-950 shadow-sm";
+        btnStudent.className = "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium text-slate-300 hover:text-white transition-all";
+        renderEmployerDashboard();
+      }
+    }
+
+    function setStudentTab(tabName) {
+      ['shift', 'payslip', 'grievance', 'passport', 'exam'].forEach(t => {
+        const content = document.getElementById(`student-tab-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tabName) {
+          content?.classList.remove('hidden');
+          if (btn) btn.className = "tab-btn py-2 px-1 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow-md flex flex-col items-center gap-0.5";
+        } else {
+          content?.classList.add('hidden');
+          if (btn) btn.className = "tab-btn py-2 px-1 rounded-xl text-xs font-medium text-slate-400 hover:text-white transition-all flex flex-col items-center gap-0.5";
+        }
+      });
+    }
+
+    function setEmployerTab(tabName) {
+      ['roster', 'grievances', 'fatigue', 'audit'].forEach(t => {
+        const view = document.getElementById(`adm-view-${t}`);
+        const btn = document.getElementById(`adm-tab-${t}`);
+        if (t === tabName) {
+          view.classList.remove('hidden');
+          btn.className = "px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow";
+        } else {
+          view.classList.add('hidden');
+          btn.className = "px-3.5 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white transition-all flex items-center gap-1.5";
+        }
+      });
+    }
+
+    function toggleMobileFrame() {
+      const wrapper = document.getElementById('student-frame-wrapper');
+      const container = document.getElementById('student-phone-container');
+      isPhoneFrameToggled = !isPhoneFrameToggled;
+      if (isPhoneFrameToggled) {
+        wrapper.className = "flex justify-center p-4";
+        container.className = "bg-slate-900 border-4 border-slate-700 rounded-[40px] shadow-2xl overflow-hidden max-w-sm w-full ring-8 ring-slate-950";
+      } else {
+        wrapper.className = "transition-all duration-300 max-w-full";
+        container.className = "bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden mx-auto max-w-2xl";
+      }
+    }
+
+    function openJudgeModal() { document.getElementById('modal-judges').classList.remove('hidden'); }
+    function closeJudgeModal() { document.getElementById('modal-judges').classList.add('hidden'); }
+    function openSmsMirrorModal() { document.getElementById('modal-sms').classList.remove('hidden'); }
+    function closeSmsMirrorModal() { document.getElementById('modal-sms').classList.add('hidden'); }
+    function openCertificateModal() { document.getElementById('modal-certificate').classList.remove('hidden'); }
+    function closeCertificateModal() { document.getElementById('modal-certificate').classList.add('hidden'); }
+
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      let borderCol = "border-blue-500/50 bg-slate-900/95 text-blue-300";
+      if (type === 'error') borderCol = "border-rose-500/50 bg-slate-900/95 text-rose-300";
+      else if (type === 'warning') borderCol = "border-amber-500/50 bg-slate-900/95 text-amber-300";
+      toast.className = `border ${borderCol} px-4 py-2.5 rounded-2xl shadow-xl text-xs font-semibold flex items-center gap-2 pointer-events-auto`;
+      toast.innerHTML = `<span>✓</span> <span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3200);
+    }
+  </script>
+</body>
+</html>
